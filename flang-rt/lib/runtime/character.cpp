@@ -992,6 +992,55 @@ static RT_API_ATTRS void TokenizePositionsImpl(Descriptor &first,
   }
 }
 
+// SPLIT - scans for the next separator character in STRING.
+// When BACK is false (or absent), returns the position of the leftmost
+// character in SET whose position in STRING is greater than POS, or
+// LEN(STRING)+1 if no such character exists.
+// When BACK is true, returns the position of the rightmost character in
+// SET whose position in STRING is less than POS, or 0 if no such
+// character exists.
+template <typename CHAR>
+static RT_API_ATTRS std::size_t SplitImpl(const CHAR *string,
+    std::size_t stringLen, const CHAR *set, std::size_t setLen,
+    std::size_t pos, bool back) {
+  if (back) {
+    // Scan backwards from position pos-1 (1-indexed pos means index pos-2)
+    // looking for the rightmost separator at position < pos.
+    if (pos <= 1) {
+      return 0;
+    }
+    std::size_t scanLen = pos - 1; // number of characters to scan
+    if (scanLen > stringLen) {
+      scanLen = stringLen;
+    }
+    for (std::size_t i = scanLen; i > 0; --i) {
+      CHAR ch = string[i - 1];
+      for (std::size_t j = 0; j < setLen; ++j) {
+        if (set[j] == ch) {
+          return i; // 1-indexed position
+        }
+      }
+    }
+    return 0;
+  } else {
+    // Scan forward from position pos+1 (1-indexed) looking for the
+    // leftmost separator at position > pos.
+    if (pos >= stringLen) {
+      return stringLen + 1;
+    }
+    std::size_t startIdx = pos; // 0-indexed start = pos (since pos is 1-indexed and we want pos+1)
+    for (std::size_t i = startIdx; i < stringLen; ++i) {
+      CHAR ch = string[i];
+      for (std::size_t j = 0; j < setLen; ++j) {
+        if (set[j] == ch) {
+          return i + 1; // convert to 1-indexed
+        }
+      }
+    }
+    return stringLen + 1;
+  }
+}
+
 extern "C" {
 RT_EXT_API_GROUP_BEGIN
 
@@ -1373,6 +1422,21 @@ void RTDEF(TokenizePositions)(Descriptor &first, Descriptor &last,
     int sourceLine) {
   Terminator terminator{sourceFile, sourceLine};
   TokenizePositionsImpl(first, last, string, set, terminator);
+}
+
+std::size_t RTDEF(Split1)(const char *string, std::size_t stringLen,
+    const char *set, std::size_t setLen, std::size_t pos, bool back) {
+  return SplitImpl(string, stringLen, set, setLen, pos, back);
+}
+
+std::size_t RTDEF(Split2)(const char16_t *string, std::size_t stringLen,
+    const char16_t *set, std::size_t setLen, std::size_t pos, bool back) {
+  return SplitImpl(string, stringLen, set, setLen, pos, back);
+}
+
+std::size_t RTDEF(Split4)(const char32_t *string, std::size_t stringLen,
+    const char32_t *set, std::size_t setLen, std::size_t pos, bool back) {
+  return SplitImpl(string, stringLen, set, setLen, pos, back);
 }
 
 RT_EXT_API_GROUP_END
