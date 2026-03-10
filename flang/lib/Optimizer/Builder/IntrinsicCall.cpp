@@ -8580,9 +8580,9 @@ void IntrinsicLibrary::genSplit(llvm::ArrayRef<fir::ExtendedValue> args) {
   mlir::Value posIndex = builder.createConvert(loc, indexTy, posValue);
 
   // Call the runtime
-  mlir::Value newPos = fir::runtime::genSplit(builder, loc, kind, stringBase,
-                                              stringLen, setBase, setLen,
-                                              posIndex, back);
+  mlir::Value newPos =
+      fir::runtime::genSplit(builder, loc, kind, stringBase, stringLen, setBase,
+                             setLen, posIndex, back);
 
   // Convert result back to the POS integer type and store
   mlir::Value newPosConverted = builder.createConvert(loc, posRefTy, newPos);

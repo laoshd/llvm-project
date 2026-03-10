@@ -362,8 +362,7 @@ mlir::Value fir::runtime::genSplit(fir::FirOpBuilder &builder,
         loc, "unsupported CHARACTER kind value. Runtime expects 1, 2, or 4.");
   }
   auto fTy = func.getFunctionType();
-  auto args = fir::runtime::createArguments(builder, loc, fTy, stringBase,
-                                            stringLen, setBase, setLen, pos,
-                                            back);
+  auto args = fir::runtime::createArguments(
+      builder, loc, fTy, stringBase, stringLen, setBase, setLen, pos, back);
   return fir::CallOp::create(builder, loc, func, args).getResult(0);
 }

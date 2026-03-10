@@ -1001,8 +1001,8 @@ static RT_API_ATTRS void TokenizePositionsImpl(Descriptor &first,
 // character exists.
 template <typename CHAR>
 static RT_API_ATTRS std::size_t SplitImpl(const CHAR *string,
-    std::size_t stringLen, const CHAR *set, std::size_t setLen,
-    std::size_t pos, bool back) {
+    std::size_t stringLen, const CHAR *set, std::size_t setLen, std::size_t pos,
+    bool back) {
   if (back) {
     // Scan backwards from position pos-1 (1-indexed pos means index pos-2)
     // looking for the rightmost separator at position < pos.
@@ -1028,7 +1028,8 @@ static RT_API_ATTRS std::size_t SplitImpl(const CHAR *string,
     if (pos >= stringLen) {
       return stringLen + 1;
     }
-    std::size_t startIdx = pos; // 0-indexed start = pos (since pos is 1-indexed and we want pos+1)
+    std::size_t startIdx =
+        pos; // 0-indexed start = pos (since pos is 1-indexed and we want pos+1)
     for (std::size_t i = startIdx; i < stringLen; ++i) {
       CHAR ch = string[i];
       for (std::size_t j = 0; j < setLen; ++j) {
