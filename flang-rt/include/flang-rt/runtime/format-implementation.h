@@ -193,7 +193,7 @@ static RT_API_ATTRS bool AbsoluteTabbing(CONTEXT &context, int n) {
 
 template <typename CONTEXT>
 static RT_API_ATTRS void HandleControl(
-    CONTEXT &context, char ch, char next, int n, char next2 = '\0') {
+    CONTEXT &context, char ch, char next, int n, char next2) {
   MutableModes &modes{context.mutableModes()};
   switch (ch) {
   case 'B':
