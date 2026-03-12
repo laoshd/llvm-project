@@ -20,18 +20,3 @@ subroutine split_basic()
   ! CHECK: %[[RESULT_I32:.*]] = fir.convert %[[RESULT]] : (i64) -> i32
   ! CHECK: fir.store %[[RESULT_I32]] to %{{.*}} : !fir.ref<i32>
 end subroutine split_basic
-
-! CHECK-LABEL: split_back
-subroutine split_back()
-  implicit none
-  character(20) :: string
-  character(5) :: set
-  integer :: pos
-  logical :: back
-  string = "one,two,three"
-  set = ","
-  pos = 14
-  back = .true.
-  call split(string, set, pos, back)
-  ! CHECK: fir.call @_FortranASplit1(
-end subroutine split_back

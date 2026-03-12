@@ -992,53 +992,39 @@ static RT_API_ATTRS void TokenizePositionsImpl(Descriptor &first,
   }
 }
 
-// SPLIT - scans for the next separator character in STRING.
-// When BACK is false (or absent), returns the position of the leftmost
-// character in SET whose position in STRING is greater than POS, or
-// LEN(STRING)+1 if no such character exists.
-// When BACK is true, returns the position of the rightmost character in
-// SET whose position in STRING is less than POS, or 0 if no such
-// character exists.
+// SPLIT — implemented in terms of SCAN.
+// When BACK is false, returns the position of the leftmost character in SET
+// at a position > POS, or LEN(STRING)+1 if none.
+// When BACK is true, returns the position of the rightmost character in SET
+// at a position < POS, or 0 if none.
 template <typename CHAR>
 static RT_API_ATTRS std::size_t SplitImpl(const CHAR *string,
     std::size_t stringLen, const CHAR *set, std::size_t setLen, std::size_t pos,
     bool back) {
   if (back) {
-    // Scan backwards from position pos-1 (1-indexed pos means index pos-2)
-    // looking for the rightmost separator at position < pos.
-    if (pos <= 1) {
-      return 0;
-    }
-    std::size_t scanLen = pos - 1; // number of characters to scan
+    std::size_t scanLen{pos > 1 ? pos - 1 : std::size_t{0}};
     if (scanLen > stringLen) {
       scanLen = stringLen;
     }
-    for (std::size_t i = scanLen; i > 0; --i) {
-      CHAR ch = string[i - 1];
-      for (std::size_t j = 0; j < setLen; ++j) {
-        if (set[j] == ch) {
-          return i; // 1-indexed position
-        }
-      }
+    if constexpr (sizeof(CHAR) == 1) {
+      return ScanVerify<false>(string, scanLen, set, setLen, true);
+    } else {
+      return ScanVerify<CHAR, CharFunc::Scan>(
+          string, scanLen, set, setLen, true);
     }
-    return 0;
   } else {
-    // Scan forward from position pos+1 (1-indexed) looking for the
-    // leftmost separator at position > pos.
     if (pos >= stringLen) {
       return stringLen + 1;
     }
-    std::size_t startIdx =
-        pos; // 0-indexed start = pos (since pos is 1-indexed and we want pos+1)
-    for (std::size_t i = startIdx; i < stringLen; ++i) {
-      CHAR ch = string[i];
-      for (std::size_t j = 0; j < setLen; ++j) {
-        if (set[j] == ch) {
-          return i + 1; // convert to 1-indexed
-        }
-      }
+    std::size_t npos;
+    if constexpr (sizeof(CHAR) == 1) {
+      npos =
+          ScanVerify<false>(string + pos, stringLen - pos, set, setLen, false);
+    } else {
+      npos = ScanVerify<CHAR, CharFunc::Scan>(
+          string + pos, stringLen - pos, set, setLen, false);
     }
-    return stringLen + 1;
+    return npos != 0 ? pos + npos : stringLen + 1;
   }
 }
 
