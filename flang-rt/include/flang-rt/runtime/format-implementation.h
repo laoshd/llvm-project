@@ -254,14 +254,9 @@ static RT_API_ATTRS void HandleControl(
   case 'L':
     if (next == 'Z') {
       if (next2 == 'S') {
-        // LZS - suppress leading zeros
-        modes.leadingZero = MutableModes::LeadingZeroMode::Suppress;
-      } else if (next2 == 'P') {
-        // LZP - print leading zero
-        modes.leadingZero = MutableModes::LeadingZeroMode::Print;
+        modes.editingFlags |= leadingZeroSuppress; // LZS
       } else {
-        // LZ - processor-dependent (default behavior)
-        modes.leadingZero = MutableModes::LeadingZeroMode::Processor;
+        modes.editingFlags &= ~leadingZeroSuppress; // LZ or LZP
       }
       return;
     }
