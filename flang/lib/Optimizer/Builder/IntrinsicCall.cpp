@@ -8547,7 +8547,7 @@ void IntrinsicLibrary::genSleep(llvm::ArrayRef<fir::ExtendedValue> args) {
 
 // SPLIT
 void IntrinsicLibrary::genSplit(llvm::ArrayRef<fir::ExtendedValue> args) {
-  assert(args.size() == 4 && "SPLIT requires 3 or 4 arguments");
+  assert(args.size() == 4);
 
   mlir::Value stringBase = fir::getBase(args[0]);
   mlir::Value stringLen = fir::getLen(args[0]);
