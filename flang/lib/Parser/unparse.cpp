@@ -1258,7 +1258,10 @@ public:
                                return true;
                              },
                              [&](const ConnectSpec::CharExpr &y) {
-                               Walk(y.t, "=");
+                               Walk(std::get<ConnectSpec::CharExpr::Kind>(
+                                   y.t));
+                               Put('=');
+                               Walk(std::get<ScalarDefaultCharExpr>(y.t));
                                return false;
                              },
                              [&](const MsgVariable &) {
@@ -1343,7 +1346,11 @@ public:
             [&](const IoUnit &) { Word("UNIT="); },
             [&](const Format &) { Word("FMT="); },
             [&](const Name &) { Word("NML="); },
-            [&](const IoControlSpec::CharExpr &y) { Walk(y.t, "="); },
+            [&](const IoControlSpec::CharExpr &y) {
+              Walk(std::get<IoControlSpec::CharExpr::Kind>(y.t));
+              Put('=');
+              Walk(std::get<ScalarDefaultCharExpr>(y.t));
+            },
             [&](const IoControlSpec::Asynchronous &) { Word("ASYNCHRONOUS="); },
             [&](const EndLabel &) { Word("END="); },
             [&](const EorLabel &) { Word("EOR="); },
@@ -1425,7 +1432,10 @@ public:
                                return true;
                              },
                              [&](const InquireSpec::CharVar &y) {
-                               Walk(y.t, "=");
+                               Walk(std::get<InquireSpec::CharVar::Kind>(
+                                   y.t));
+                               Put('=');
+                               Walk(std::get<ScalarDefaultCharVariable>(y.t));
                                return false;
                              },
                              [&](const InquireSpec::IntVar &y) {

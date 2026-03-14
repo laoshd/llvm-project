@@ -260,3 +260,120 @@ TEST(LeadingZeroTests, WithoutCommaSeparator) {
   ASSERT_TRUE(CompareFormatReal("(LZF6.1)", 0.2, "   0.2", got))
       << "Expected '   0.2', got '" << got << "'";
 }
+
+// LEADING_ZERO= specifier via SetLeadingZero runtime API
+TEST(LeadingZeroTests, SetLeadingZero_Suppress) {
+  // LEADING_ZERO='SUPPRESS' should suppress the optional leading zero
+  char buffer[800];
+  const char *format{"(F6.1)"};
+  auto cookie{IONAME(BeginInternalFormattedOutput)(
+      buffer, sizeof buffer, format, std::strlen(format))};
+  IONAME(SetLeadingZero)(cookie, "SUPPRESS", 8);
+  EXPECT_TRUE(IONAME(OutputReal64)(cookie, 0.5));
+  auto status{IONAME(EndIoStatement)(cookie)};
+  EXPECT_EQ(status, 0);
+  std::string got{buffer, sizeof buffer};
+  auto lastNonBlank{got.find_last_not_of(" ")};
+  if (lastNonBlank != std::string::npos) {
+    got.resize(lastNonBlank + 1);
+  }
+  ASSERT_TRUE(CompareFormattedStrings("    .5", got))
+      << "Expected '    .5', got '" << got << "'";
+}
+
+TEST(LeadingZeroTests, SetLeadingZero_Print) {
+  // LEADING_ZERO='PRINT' should print the optional leading zero
+  char buffer[800];
+  const char *format{"(F6.1)"};
+  auto cookie{IONAME(BeginInternalFormattedOutput)(
+      buffer, sizeof buffer, format, std::strlen(format))};
+  IONAME(SetLeadingZero)(cookie, "PRINT", 5);
+  EXPECT_TRUE(IONAME(OutputReal64)(cookie, 0.5));
+  auto status{IONAME(EndIoStatement)(cookie)};
+  EXPECT_EQ(status, 0);
+  std::string got{buffer, sizeof buffer};
+  auto lastNonBlank{got.find_last_not_of(" ")};
+  if (lastNonBlank != std::string::npos) {
+    got.resize(lastNonBlank + 1);
+  }
+  ASSERT_TRUE(CompareFormattedStrings("   0.5", got))
+      << "Expected '   0.5', got '" << got << "'";
+}
+
+TEST(LeadingZeroTests, SetLeadingZero_ProcessorDefined) {
+  // LEADING_ZERO='PROCESSOR_DEFINED' should behave like PRINT (flang default)
+  char buffer[800];
+  const char *format{"(F6.1)"};
+  auto cookie{IONAME(BeginInternalFormattedOutput)(
+      buffer, sizeof buffer, format, std::strlen(format))};
+  IONAME(SetLeadingZero)(cookie, "PROCESSOR_DEFINED", 17);
+  EXPECT_TRUE(IONAME(OutputReal64)(cookie, 0.5));
+  auto status{IONAME(EndIoStatement)(cookie)};
+  EXPECT_EQ(status, 0);
+  std::string got{buffer, sizeof buffer};
+  auto lastNonBlank{got.find_last_not_of(" ")};
+  if (lastNonBlank != std::string::npos) {
+    got.resize(lastNonBlank + 1);
+  }
+  ASSERT_TRUE(CompareFormattedStrings("   0.5", got))
+      << "Expected '   0.5', got '" << got << "'";
+}
+
+// LEADING_ZERO= overridden by LZS/LZP edit descriptors in format
+TEST(LeadingZeroTests, SetLeadingZero_OverriddenByEditDescriptor) {
+  // Set LEADING_ZERO='PRINT' but format uses LZS — LZS should win
+  char buffer[800];
+  const char *format{"(LZS,F6.1)"};
+  auto cookie{IONAME(BeginInternalFormattedOutput)(
+      buffer, sizeof buffer, format, std::strlen(format))};
+  IONAME(SetLeadingZero)(cookie, "PRINT", 5);
+  EXPECT_TRUE(IONAME(OutputReal64)(cookie, 0.5));
+  auto status{IONAME(EndIoStatement)(cookie)};
+  EXPECT_EQ(status, 0);
+  std::string got{buffer, sizeof buffer};
+  auto lastNonBlank{got.find_last_not_of(" ")};
+  if (lastNonBlank != std::string::npos) {
+    got.resize(lastNonBlank + 1);
+  }
+  ASSERT_TRUE(CompareFormattedStrings("    .5", got))
+      << "Expected '    .5', got '" << got << "'";
+}
+
+// LEADING_ZERO= specifier via SetLeadingZero runtime API
+TEST(LeadingZeroTests, SetLeadingZeroSuppressViaAPI) {
+  char buffer[800];
+  const char *format{"(F6.1)"};
+  auto cookie{IONAME(BeginInternalFormattedOutput)(
+      buffer, sizeof buffer, format, std::strlen(format))};
+  // Set LEADING_ZERO='SUPPRESS'
+  EXPECT_TRUE(IONAME(SetLeadingZero)(cookie, "SUPPRESS", 8));
+  EXPECT_TRUE(IONAME(OutputReal64)(cookie, 0.5));
+  auto status{IONAME(EndIoStatement)(cookie)};
+  EXPECT_EQ(status, 0);
+  std::string got{buffer, sizeof buffer};
+  auto lastNonBlank{got.find_last_not_of(" ")};
+  if (lastNonBlank != std::string::npos) {
+    got.resize(lastNonBlank + 1);
+  }
+  ASSERT_TRUE(CompareFormattedStrings("    .5", got))
+      << "Expected '    .5', got '" << got << "'";
+}
+
+TEST(LeadingZeroTests, SetLeadingZeroPrintViaAPI) {
+  char buffer[800];
+  const char *format{"(F6.1)"};
+  auto cookie{IONAME(BeginInternalFormattedOutput)(
+      buffer, sizeof buffer, format, std::strlen(format))};
+  // Set LEADING_ZERO='PRINT'
+  EXPECT_TRUE(IONAME(SetLeadingZero)(cookie, "PRINT", 5));
+  EXPECT_TRUE(IONAME(OutputReal64)(cookie, 0.5));
+  auto status{IONAME(EndIoStatement)(cookie)};
+  EXPECT_EQ(status, 0);
+  std::string got{buffer, sizeof buffer};
+  auto lastNonBlank{got.find_last_not_of(" ")};
+  if (lastNonBlank != std::string::npos) {
+    got.resize(lastNonBlank + 1);
+  }
+  ASSERT_TRUE(CompareFormattedStrings("   0.5", got))
+      << "Expected '   0.5', got '" << got << "'";
+}

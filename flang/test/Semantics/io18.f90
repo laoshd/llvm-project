@@ -2,6 +2,9 @@
 
 ! F202X leading-zero control edit descriptors: LZ, LZS, LZP
 
+  real :: x
+  character(20) :: lz_val
+
   ! Valid uses of LZ, LZP, LZS in FORMAT statements
 1001 format(LZ, F10.3)
 1002 format(LZP, F10.3)
@@ -96,4 +99,28 @@
 
   !ERROR: Repeat specifier before 'LZS' edit descriptor
 2003 format(2LZS, F10.3)
+
+  ! LEADING_ZERO= specifier tests
+
+  ! Valid LEADING_ZERO= on OPEN
+  open(10, file='test.dat', form='formatted', leading_zero='print')
+  open(10, file='test.dat', form='formatted', leading_zero='suppress')
+  open(10, file='test.dat', form='formatted', leading_zero='processor_defined')
+
+  ! Valid LEADING_ZERO= on WRITE
+  write(10, '(F10.3)', leading_zero='print') 0.5
+  write(10, '(F10.3)', leading_zero='suppress') 0.5
+
+  ! Error: LEADING_ZERO= on READ (prohibited, like SIGN=)
+  !ERROR: READ statement must not have a LEADING_ZERO specifier
+  read(10, '(F10.3)', leading_zero='print') x
+
+  ! Error: invalid LEADING_ZERO= value
+  !ERROR: Invalid LEADING_ZERO value 'bogus'
+  open(10, file='test.dat', form='formatted', leading_zero='bogus')
+
+  ! Valid LEADING_ZERO= on INQUIRE
+  inquire(10, leading_zero=lz_val)
+
+  close(10)
 end

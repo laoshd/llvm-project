@@ -193,7 +193,7 @@ static RT_API_ATTRS bool AbsoluteTabbing(CONTEXT &context, int n) {
 
 template <typename CONTEXT>
 static RT_API_ATTRS void HandleControl(
-    CONTEXT &context, char ch, char next, int n, char next2) {
+    CONTEXT &context, char ch, char next, char next2, int n) {
   MutableModes &modes{context.mutableModes()};
   switch (ch) {
   case 'B':
@@ -504,7 +504,7 @@ RT_API_ATTRS int FormatControl<CONTEXT>::CueUpNextDataEdit(
           repeat = GetIntField(context);
         }
         HandleControl(context, static_cast<char>(ch), static_cast<char>(next),
-            repeat ? *repeat : 1, static_cast<char>(next2));
+            static_cast<char>(next2), repeat ? *repeat : 1);
       }
     } else if (ch == '/') {
       context.AdvanceRecord(repeat && *repeat > 0 ? *repeat : 1);
