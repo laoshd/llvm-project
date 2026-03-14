@@ -770,7 +770,7 @@ static constexpr IntrinsicHandler handlers[]{
        {"set", asAddr},
        {"pos", asAddr},
        {"back", asValue, handleDynamicOptional}}},
-     /*isElemental=*/true},
+     /*isElemental=*/false},
     {"spread",
      &I::genSpread,
      {{{"source", asBox}, {"dim", asValue}, {"ncopies", asValue}}},
