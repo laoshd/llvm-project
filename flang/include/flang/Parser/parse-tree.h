@@ -2704,8 +2704,8 @@ WRAPPER_CLASS(EorLabel, Label);
 struct IoControlSpec {
   UNION_CLASS_BOILERPLATE(IoControlSpec);
   struct CharExpr {
-    ENUM_CLASS(Kind, Advance, Blank, Decimal, Delim, Leading_Zero, Pad, Round,
-        Sign)
+    ENUM_CLASS(
+        Kind, Advance, Blank, Decimal, Delim, Leading_Zero, Pad, Round, Sign)
     TUPLE_CLASS_BOILERPLATE(CharExpr);
     std::tuple<Kind, ScalarDefaultCharExpr> t;
   };

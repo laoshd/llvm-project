@@ -86,8 +86,8 @@ static constexpr std::tuple<
     mkIOKey(SetConvert), mkIOKey(SetDecimal), mkIOKey(SetDelim),
     mkIOKey(SetEncoding), mkIOKey(SetFile), mkIOKey(SetForm),
     mkIOKey(SetLeadingZero), mkIOKey(SetPad), mkIOKey(SetPos),
-    mkIOKey(SetPosition), mkIOKey(SetRec), mkIOKey(SetRecl),
-    mkIOKey(SetRound), mkIOKey(SetSign), mkIOKey(SetStatus)>
+    mkIOKey(SetPosition), mkIOKey(SetRec), mkIOKey(SetRecl), mkIOKey(SetRound),
+    mkIOKey(SetSign), mkIOKey(SetStatus)>
     newIOTable;
 } // namespace Fortran::lower
 

@@ -1258,8 +1258,7 @@ public:
                                return true;
                              },
                              [&](const ConnectSpec::CharExpr &y) {
-                               Walk(std::get<ConnectSpec::CharExpr::Kind>(
-                                   y.t));
+                               Walk(std::get<ConnectSpec::CharExpr::Kind>(y.t));
                                Put('=');
                                Walk(std::get<ScalarDefaultCharExpr>(y.t));
                                return false;
@@ -1432,8 +1431,7 @@ public:
                                return true;
                              },
                              [&](const InquireSpec::CharVar &y) {
-                               Walk(std::get<InquireSpec::CharVar::Kind>(
-                                   y.t));
+                               Walk(std::get<InquireSpec::CharVar::Kind>(y.t));
                                Put('=');
                                Walk(std::get<ScalarDefaultCharVariable>(y.t));
                                return false;

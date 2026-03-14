@@ -1282,7 +1282,7 @@ bool InquireUnitState::Inquire(
     str = !unit().IsConnected() || unit().isUnformatted.value_or(true)
         ? "UNDEFINED"
         : mutableModes().editingFlags & leadingZeroSuppress ? "SUPPRESS"
-                                                           : "PRINT";
+                                                            : "PRINT";
     break;
   case HashInquiryKeyword("DELIM"):
     if (!unit().IsConnected() || unit().isUnformatted.value_or(true)) {
