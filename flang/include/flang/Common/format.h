@@ -735,6 +735,8 @@ template <typename CHAR> bool FormatValidator<CHAR>::Check() {
       }
       if (stmt_ == IoStmtKind::Read) {
         ReportError("'AT' edit descriptor must not be used for input");
+        suppressMessageCascade_ =
+            false; // reset to allow subsequent '.' check to also report
       }
       break;
     case TokenKind::B:
